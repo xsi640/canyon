@@ -1,5 +1,6 @@
 package com.canyon.inject
 
+import com.canyon.utils.find
 import io.github.lukehutch.fastclasspathscanner.FastClasspathScanner
 import java.lang.reflect.Field
 import kotlin.reflect.KClass

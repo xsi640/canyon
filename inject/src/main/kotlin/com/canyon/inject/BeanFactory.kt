@@ -13,7 +13,7 @@ class BeanFactoryImpl : BeanFactory {
     override fun createBean(classType: ClassType): Any {
         return if (classType.single) {
             if (injectorContext!!.injectedCached.containsKey(classType)) {
-                injectorContext!!.injectedCached.get(classType)!!
+                injectorContext!!.injectedCached[classType]!!
             } else {
                 gruntBean(classType)
             }

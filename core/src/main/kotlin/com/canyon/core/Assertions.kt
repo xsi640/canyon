@@ -8,7 +8,13 @@ object Assertions {
     }
 
     fun <T> notNullOrEmpty(name: String, value: T): T {
-        if (value == null || value.toString().isEmpty())
+        if (value == null)
+            throw IllegalArgumentException("$name can not be empty")
+        if (value is Collection<*> && (value as Collection<*>).isEmpty())
+            throw IllegalArgumentException("$name can not be empty")
+        if (value is Array<*> && (value as Array<*>).isEmpty())
+            throw IllegalArgumentException("$name can not be empty")
+        if (value.toString().isEmpty())
             throw IllegalArgumentException("$name can not be empty")
         return value
     }

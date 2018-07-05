@@ -1,96 +1,124 @@
 package com.canyon.store
 
 import com.canyon.core.Assertions
-
-object Filters {
-    fun <TValue> eq(value: TValue): Expression = this.eq(StoreContant.ID, value)
-
-    fun <TValue> eq(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.EQ, value)
-    }
-
-    fun <TValue> ne(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.NE, value)
-    }
-
-    fun <TValue> gt(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.GT, value)
-    }
-
-    fun <TValue> lt(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.LT, value)
-    }
-
-    fun <TValue> gte(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.GTE, value)
-    }
-
-    fun <TValue> lte(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.LTE, value)
-    }
-
-    fun <TValue> like(fieldName: String, value: TValue): Expression {
-        return ExpressionUnit(fieldName, RelaOperator.LIKE, value)
-    }
-
-    fun and(expressions: Iterable<Expression>): Expression {
-        return ExpressionLogic(LogicOperator.AND, expressions)
-    }
-
-    fun and(vararg values: Expression): Expression {
-        return this.and(listOf(*values))
-    }
-
-    fun or(expressions: Iterable<Expression>): Expression {
-        return ExpressionLogic(LogicOperator.OR, expressions)
-    }
-
-    fun or(vararg values: Expression): Expression {
-        return this.or(listOf(*values))
-    }
-}
+import java.util.*
 
 abstract class Expression
 
-data class ExpressionUnit<T>(
-        val fieldName: String,
-        val operator: RelaOperator,
-        val value: T
+data class Field(
+        val fieldName: String
+) : Expression()
+
+data class Fields(
+        val fieldNames: Array<String>
 ) : Expression() {
-    init {
-        Assertions.notNullOrEmpty("fieldName", fieldName)
-        Assertions.notNull("operator", operator)
-        Assertions.notNull("value", value)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Fields
+
+        if (!Arrays.equals(fieldNames, other.fieldNames)) return false
+
+        return true
     }
 
-    override fun toString(): String {
-        return "fieldName:${fieldName}, value:${value}"
+    override fun hashCode(): Int {
+        return Arrays.hashCode(fieldNames)
     }
 }
 
-data class ExpressionIterableUnit<T>(
-        val fieldName: String,
-        val operator: RelaOperator,
-        val values: Iterable<T>
-) : Expression() {
+data class Value<TValue>(
+        val value: TValue
+) : Expression()
 
-    init {
-        Assertions.notNullOrEmpty("fieldName", fieldName)
-        Assertions.notNull("operator", operator)
-        Assertions.notNull("value", values)
+data class Values<TValue>(
+        val values: Array<TValue>
+) : Expression() {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Values<*>
+
+        if (!Arrays.equals(values, other.values)) return false
+
+        return true
     }
 
-    override fun toString(): String {
-        return "fieldName:${fieldName}, value:${values}"
+    override fun hashCode(): Int {
+        return Arrays.hashCode(values)
     }
 }
 
-data class ExpressionLogic(
+/**
+ * 算术表达式
+ */
+data class ArithExpression<T>(
+        val left: Expression,
+        val operator: RelaOperator,
+        val right: Expression
+) : Expression() {
+    init {
+        Assertions.notNull("left", left)
+        Assertions.notNull("operator", operator)
+        Assertions.notNull("right", right)
+    }
+
+    override fun toString(): String {
+        return "fieldName:${left}, value:${right}"
+    }
+}
+
+/**
+ * 关系表达式
+ */
+data class RelaExpression<T>(
+        val left: Expression,
+        val operator: RelaOperator,
+        val right: Expression
+) : Expression() {
+    init {
+        Assertions.notNull("left", left)
+        Assertions.notNull("operator", operator)
+        Assertions.notNull("right", right)
+    }
+
+    override fun toString(): String {
+        return "fieldName:${left}, value:${right}"
+    }
+}
+
+/**
+ * 多关系表达式
+ */
+data class MultRelaExpression(
+        val left: Expression,
+        val operator: RelaOperator,
+        val right: Collection<Expression>
+) : Expression() {
+
+    init {
+        Assertions.notNull("left", left)
+        Assertions.notNull("operator", operator)
+        Assertions.notNullOrEmpty("right", right)
+    }
+
+    override fun toString(): String {
+        return "fieldName:${left}, value:${right}"
+    }
+}
+
+/**
+ * 逻辑表达式
+ */
+data class LogicExpression(
         val operator: LogicOperator,
-        val expressions: Iterable<Expression>
+        val expressions: Collection<Expression>
 ) : Expression() {
     init {
         Assertions.notNull("logic", expressions)
+        Assertions.notNullOrEmpty("expressions", expressions)
     }
 
     override fun toString(): String {
@@ -98,41 +126,38 @@ data class ExpressionLogic(
     }
 }
 
+/**
+ * 关系操作
+ */
 enum class RelaOperator {
-    /**
-     * 相等
-     */
     EQ,
-    /**
-     * 不相等
-     */
     NE,
-    /**
-     * 大于
-     */
     GT,
-    /**
-     * 小于
-     */
     LT,
-    /**
-     * 大于等于
-     */
     GTE,
-    /**
-     * 小于等于
-     */
     LTE,
     LIKE,
 }
 
-enum class LogicOperator {
-    AND,
-    OR,
+/**
+ * 多关系表达式
+ */
+enum class MultiRelaOperator {
     IN,
     NOT_IN
 }
 
+/**
+ * 逻辑操作
+ */
+enum class LogicOperator {
+    AND,
+    OR,
+}
+
+/**
+ * 算术操作
+ */
 enum class ArithOperator {
     PLUS,
     SUB,
