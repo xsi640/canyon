@@ -3,7 +3,75 @@ package com.canyon.store
 import com.canyon.core.Assertions
 import java.util.*
 
-abstract class Expression
+abstract class Expression {
+    fun eq(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.EQ, right)
+    }
+
+    fun ne(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.NE, right)
+    }
+
+    fun gt(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.GT, right)
+    }
+
+    fun lt(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.LT, right)
+    }
+
+    fun gte(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.GTE, right)
+    }
+
+    fun lte(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.LTE, right)
+    }
+
+    fun like(right: Expression): Expression {
+        return RelaExpression(this, RelaOperator.LIKE, right)
+    }
+
+    fun in0(right: Collection<Expression>): Expression {
+        return MultRelaExpression(this, MultiRelaOperator.IN, right)
+    }
+
+    fun in0(vararg right: Expression): Expression {
+        return this.in0(*right)
+    }
+
+    fun notin(right: Collection<Expression>): Expression {
+        return MultRelaExpression(this, MultiRelaOperator.NOT_IN, right)
+    }
+
+    fun notin(vararg right: Expression): Expression {
+        return this.notin(*right)
+    }
+
+    fun plus(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.PLUS, right)
+    }
+
+    fun sub(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.SUB, right)
+    }
+
+    fun mul(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.MUL, right)
+    }
+
+    fun div(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.DIV, right)
+    }
+
+    fun mod(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.MOD, right)
+    }
+
+    fun neg(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.NEG, right)
+    }
+}
 
 data class Field(
         val fieldName: String
@@ -54,9 +122,9 @@ data class Values<TValue>(
 /**
  * 算术表达式
  */
-data class ArithExpression<T>(
+data class ArithExpression(
         val left: Expression,
-        val operator: RelaOperator,
+        val operator: ArithOperator,
         val right: Expression
 ) : Expression() {
     init {
@@ -73,7 +141,7 @@ data class ArithExpression<T>(
 /**
  * 关系表达式
  */
-data class RelaExpression<T>(
+data class RelaExpression(
         val left: Expression,
         val operator: RelaOperator,
         val right: Expression
@@ -94,7 +162,7 @@ data class RelaExpression<T>(
  */
 data class MultRelaExpression(
         val left: Expression,
-        val operator: RelaOperator,
+        val operator: MultiRelaOperator,
         val right: Collection<Expression>
 ) : Expression() {
 
@@ -124,45 +192,4 @@ data class LogicExpression(
     override fun toString(): String {
         return "logic expressions:${this.expressions}"
     }
-}
-
-/**
- * 关系操作
- */
-enum class RelaOperator {
-    EQ,
-    NE,
-    GT,
-    LT,
-    GTE,
-    LTE,
-    LIKE,
-}
-
-/**
- * 多关系表达式
- */
-enum class MultiRelaOperator {
-    IN,
-    NOT_IN
-}
-
-/**
- * 逻辑操作
- */
-enum class LogicOperator {
-    AND,
-    OR,
-}
-
-/**
- * 算术操作
- */
-enum class ArithOperator {
-    PLUS,
-    SUB,
-    MUL,
-    DIV,
-    MOD,
-    NEG,
 }
