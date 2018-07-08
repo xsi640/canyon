@@ -14,8 +14,8 @@ interface DataSource {
 @Autowire
 class C3P0DataSource : DataSource {
 
-    var dataSource: ComboPooledDataSource = ComboPooledDataSource()
-    var config = ConfigFactory.load("dataSource", StoreConfig::class.java)
+    private var dataSource: ComboPooledDataSource = ComboPooledDataSource()
+    private var config = ConfigFactory.load("dataSource", StoreConfig::class.java)
 
     init {
         this.dataSource.driverClass = config.driverClass
