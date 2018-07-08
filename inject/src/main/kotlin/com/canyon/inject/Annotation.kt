@@ -1,13 +1,9 @@
 package com.canyon.inject
 
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.declaredMemberProperties
-
 /**
  * 标注在属性上，表示这个属性的类型可以通过依赖注入直接创建
  */
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Autowire
 
