@@ -24,7 +24,8 @@ allprojects {
     targetCompatibility = 1.8
 
     ext {
-        fastClassPathScannerVersion = '3.1.6'
+        fastClassPathScannerVersion = "3.1.6"
+        typesafeConfigVersion = "1.3.3"
     }
 
     compileKotlin {
@@ -43,6 +44,7 @@ allprojects {
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         compile("org.jetbrains.kotlin:kotlin-reflect")
 
-        compile("io.github.lukehutch:fast-classpath-scanner:${fastClassPathScannerVersion}")
+        compile("io.github.lukehutch:fast-classpath-scanner:$fastClassPathScannerVersion")
+        compile("com.typesafe:config:$typesafeConfigVersion")
     }
 }

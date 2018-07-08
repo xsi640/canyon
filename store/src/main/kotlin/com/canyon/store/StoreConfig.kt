@@ -1,24 +1,16 @@
 package com.canyon.store
 
 open class StoreConfig(
-        open val driverClass: String,
-        open val jdbcUrl: String,
-        open val user: String,
-        open val password: String
+        val driverClass: String,
+        val jdbcUrl: String,
+        val user: String,
+        val password: String,
+        val pool: PoolConfig
 )
 
-class PoolStoreConfig(
-        override val driverClass: String,
-        override val jdbcUrl: String,
-        override val user: String,
-        override val password: String,
+class PoolConfig(
         val minPoolSize: Int = 3,
         val maxPoolSize: Int = 10,
         val acquireIncrement: Int = 5,
         val maxIdleTime: Int = 240
-) : StoreConfig(
-        driverClass,
-        jdbcUrl,
-        user,
-        password
 )

@@ -1,5 +1,6 @@
 package com.canyon.store
 
+import com.canyon.config.ConfigFactory
 import com.canyon.inject.Autowire
 import com.mchange.v2.c3p0.ComboPooledDataSource
 import java.sql.Connection
@@ -11,9 +12,10 @@ interface DataSource {
 
 
 @Autowire
-class C3P0DataSource(config: PoolStoreConfig) : DataSource {
+class C3P0DataSource : DataSource {
 
     var dataSource: ComboPooledDataSource = ComboPooledDataSource()
+    var config = ConfigFactory.load("dataSource", StoreConfig::class.java)
 
     init {
         this.dataSource.driverClass = config.driverClass
@@ -21,10 +23,10 @@ class C3P0DataSource(config: PoolStoreConfig) : DataSource {
         this.dataSource.user = config.user
         this.dataSource.password = config.password
 
-        this.dataSource.minPoolSize = config.minPoolSize
-        this.dataSource.acquireIncrement = config.acquireIncrement
-        this.dataSource.maxPoolSize = config.maxPoolSize
-        this.dataSource.maxIdleTime = config.maxIdleTime
+        this.dataSource.minPoolSize = config.pool.minPoolSize
+        this.dataSource.acquireIncrement = config.pool.acquireIncrement
+        this.dataSource.maxPoolSize = config.pool.maxPoolSize
+        this.dataSource.maxIdleTime = config.pool.maxIdleTime
     }
 
     override fun open(): Connection {

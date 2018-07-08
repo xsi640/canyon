@@ -25,6 +25,19 @@ annotation class Named(
         val value: String = ""
 )
 
+@Target(AnnotationTarget.CLASS)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Config(
+        val fileName: String = "",
+        val path: String = ""
+)
+
+@Target(AnnotationTarget.FIELD)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Value(
+        val path: String
+)
+
 /**
  * 扫描的包名称
  */

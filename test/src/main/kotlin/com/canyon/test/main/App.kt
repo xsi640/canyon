@@ -6,7 +6,7 @@ import com.canyon.inject.Autowire
 import com.canyon.inject.Bean
 
 fun main(args: Array<String>) {
-    ApplicationContext("com.canyon.test").run()
+    ApplicationContext("com.canyon").run()
 }
 
 
