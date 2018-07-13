@@ -5,8 +5,8 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 object GZipUtils {
-    val BUFFER = 4096
-    val EXT = ".gz"
+    val BUFFER_SIZE = 4096
+    val FILE_EXT = ".gz"
 
     /**
      * 数据压缩
@@ -36,7 +36,7 @@ object GZipUtils {
      */
     @JvmOverloads
     fun compress(file: File, delete: Boolean = true) {
-        FileOutputStream(file.path + EXT).use { fos ->
+        FileOutputStream(file.path + FILE_EXT).use { fos ->
             FileInputStream(file).use { fis ->
                 compress(fis, fos)
                 fos.flush()
@@ -56,7 +56,7 @@ object GZipUtils {
      */
     fun compress(inputStream: InputStream, outputStream: OutputStream) {
         GZIPOutputStream(outputStream).use { gos ->
-            inputStream.copyTo(gos, BUFFER)
+            inputStream.copyTo(gos, BUFFER_SIZE)
             gos.finish()
             gos.flush()
         }
@@ -104,7 +104,7 @@ object GZipUtils {
     @JvmOverloads
     fun decompress(file: File, delete: Boolean = true) {
         FileInputStream(file).use { fis ->
-            FileOutputStream(file.path.replace(EXT, "")).use { fos ->
+            FileOutputStream(file.path.replace(FILE_EXT, "")).use { fos ->
                 decompress(fis, fos)
                 fos.flush()
             }
@@ -123,7 +123,7 @@ object GZipUtils {
      */
     fun decompress(inputStream: InputStream, outputStream: OutputStream) {
         GZIPInputStream(inputStream).use { gis ->
-            gis.copyTo(outputStream, BUFFER)
+            gis.copyTo(outputStream, BUFFER_SIZE)
         }
     }
 
