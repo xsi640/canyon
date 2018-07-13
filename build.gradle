@@ -24,8 +24,12 @@ allprojects {
     targetCompatibility = 1.8
 
     ext {
-        fastClassPathScannerVersion = "3.1.6"
-        typesafeConfigVersion = "1.3.3"
+        commonsIO = "2.6"
+        commonsCodec = "1.11"
+        commonsLang = "3.7"
+        fastClassPathScanner = "3.1.6"
+        typesafeConfig = "1.3.3"
+        fastJson = "1.2.47"
     }
 
     compileKotlin {
@@ -44,7 +48,11 @@ allprojects {
         compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
         compile("org.jetbrains.kotlin:kotlin-reflect")
 
-        compile("io.github.lukehutch:fast-classpath-scanner:$fastClassPathScannerVersion")
-        compile("com.typesafe:config:$typesafeConfigVersion")
+        compile("commons-codec:commons-codec:$commonsCodec")
+        compile("commons-io:commons-io:$commonsIO")
+        compile("org.apache.commons:commons-lang3:$commonsLang")
+        compile("io.github.lukehutch:fast-classpath-scanner:$fastClassPathScanner")
+        compile("com.typesafe:config:$typesafeConfig")
+        compile("com.alibaba:fastjson:$fastJson")
     }
 }
