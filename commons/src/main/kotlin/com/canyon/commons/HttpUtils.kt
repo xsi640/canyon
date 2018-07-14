@@ -24,10 +24,10 @@ class HttpUtils {
 
     companion object {
 
-        val RESPONSE_STREAM_MAX_LENGTH = 3850
-        val MAX_TIME_OUT = 30000
-        val DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded"
-        private val DEFAULT_USER_AGENT = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
+        const val RESPONSE_STREAM_MAX_LENGTH = 3850
+        const val MAX_TIME_OUT = 30000
+        const val DEFAULT_CONTENT_TYPE = "application/x-www-form-urlencoded"
+        private const val DEFAULT_USER_AGENT = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; SV1; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
 
         fun download(url: String, nvc: NameValueCollection, method: String, path: String) {
             var m = Method.GET
