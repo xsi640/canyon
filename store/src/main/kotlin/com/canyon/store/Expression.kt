@@ -193,3 +193,13 @@ data class LogicExpression(
         return "logic expressions:${this.expressions}"
     }
 }
+
+data class OrderExpression(
+        val field: Field,
+        val order: Order
+)
+
+enum class Order {
+    ASC,
+    DESC
+}
