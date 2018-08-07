@@ -1,13 +1,19 @@
 package com.canyon.boot
 
-interface Boot {
+import com.canyon.inject.InjectorContext
+
+abstract class Boot {
+    /**
+     * 依赖注入上下文
+     */
+    lateinit var injectorContext: InjectorContext
     /**
      * 开始
      */
-    fun run()
+    abstract fun run()
 
     /**
      * 销毁
      */
-    fun destory()
+    abstract fun destory()
 }

@@ -17,7 +17,7 @@ class A {
     }
 }
 
-class App : Boot {
+class App : Boot() {
 
     @Autowire
     var a: A? = null

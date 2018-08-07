@@ -1,33 +1,38 @@
 package com.canyon.boot
 
 import com.canyon.inject.*
+import com.canyon.web.Controller
+import org.apache.logging.log4j.LogManager
 
 class ApplicationContext(
         vararg packages: String
-) : Boot {
+) : Boot() {
+
+    val logger = LogManager.getLogger()
 
     var basePackages = packages.toMutableList()
     var classScanner: ClassScanner = ClassScannerImpl()
-    var injectorContext: InjectorContext
 
     init {
         val beanFactory = BeanFactoryImpl()
-        this.injectorContext = InjectorContextImpl(
+        super.injectorContext = InjectorContextImpl(
                 this.classScanner,
                 DependenciesProcessorImpl(),
                 beanFactory,
                 this.basePackages
         )
-        beanFactory.injectorContext = this.injectorContext
+        beanFactory.injectorContext = super.injectorContext
     }
 
     override fun run() {
         this.injectorContext.registAnnotation(Bean::class)
-        this.injectorContext.registInterface(Boot::class)
+        this.injectorContext.registAnnotation(Controller::class)
+        this.injectorContext.registSuperclass(Boot::class)
         this.injectorContext.excludedClass(ApplicationContext::class)
         this.injectorContext.initialize()
 
-        this.injectorContext.getBeanFromSuper(Boot::class).forEach {
+        this.injectorContext.getBeansFromSuper(Boot::class).forEach {
+            it.injectorContext = super.injectorContext
             it.run()
         }
     }

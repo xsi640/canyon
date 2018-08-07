@@ -21,7 +21,9 @@ interface InjectorContext {
     fun initialize()
 
     fun getBean(kClass: KClass<*>): Any
-    fun <T : Any> getBeanFromSuper(kClass: KClass<T>): List<T>
+    fun <T : Any> getBeansFromSuper(kClass: KClass<T>): List<T>
+    fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>): List<Any>
+    fun <T : Any> getBeansFromInterface(kClass: KClass<T>): List<T>
 }
 
 class InjectorContextImpl(
@@ -47,7 +49,24 @@ class InjectorContextImpl(
         return beanFactory.createBean(classType!!)
     }
 
-    override fun <T : Any> getBeanFromSuper(kClass: KClass<T>): List<T> {
+    override fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>): List<Any> {
+        if (!initialized) {
+            throw InitializeException("InjectorContext initializing...")
+        }
+        val result = mutableListOf<Any>()
+        classTypeCached.keys.forEach {
+            if (it.annotations.firstOrNull { it::class == kClass } != null) {
+                result.add(this.getBean(it))
+            }
+        }
+        return result
+    }
+
+    override fun <T : Any> getBeansFromInterface(kClass: KClass<T>): List<T> {
+        return getBeansFromSuper(kClass)
+    }
+
+    override fun <T : Any> getBeansFromSuper(kClass: KClass<T>): List<T> {
         if (!initialized) {
             throw InitializeException("InjectorContext initializing...")
         }

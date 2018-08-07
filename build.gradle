@@ -30,6 +30,7 @@ allprojects {
         type_safe = "1.3.3"
         fast_json = "1.2.47"
         vertx = "3.5.3"
+        log4j = "2.11.1"
     }
 
     compileKotlin {
@@ -54,5 +55,7 @@ allprojects {
         compile "io.github.lukehutch:fast-classpath-scanner:$fast_class_path_scanner"
         compile "com.typesafe:config:$type_safe"
         compile "com.alibaba:fastjson:$fast_json"
+        compile "org.apache.logging.log4j:log4j-api:$log4j"
+        compile "org.apache.logging.log4j:log4j-core:$log4j"
     }
 }

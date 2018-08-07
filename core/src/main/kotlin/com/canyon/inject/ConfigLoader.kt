@@ -11,7 +11,7 @@ interface ConfigLoader {
 @Autowire
 class ConfigLoaerImpl : ConfigLoader {
     override fun <T> load(fileName: String, clazz: Class<T>): T {
-        var inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)
+        val inputStream = ClassLoader.getSystemClassLoader().getResourceAsStream(fileName)
         val config = ConfigFactory.parseReader(InputStreamReader(inputStream))
         return ConfigBeanFactory.create(config, clazz)
     }

@@ -4,14 +4,10 @@ package com.canyon.web
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Controller
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.RUNTIME)
-annotation class RestController
-
 @Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Path(
-        vararg val path: String
+        val path: String
 )
 
 @Target(AnnotationTarget.FUNCTION)
