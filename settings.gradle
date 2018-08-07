@@ -1,6 +1,4 @@
-include 'inject'
 include 'store'
-include 'boot'
 include 'test'
 include 'core'
-include 'commons'
+include 'web'

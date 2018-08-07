@@ -8,7 +8,7 @@ object Reflection {
         if (interfaceClass.isAssignableFrom(clazz)) {
             clazz.genericInterfaces.forEach {
                 if ((it as ParameterizedTypeImpl).rawType == interfaceClass) {
-                    var type = it.actualTypeArguments.get(0)
+                    val type = it.actualTypeArguments[0]
                     if (type != null)
                         result = type as Class<*>
                 }

@@ -1,9 +1,5 @@
 package com.canyon.store
 
-import com.canyon.config.ConfigFactory
-import com.canyon.inject.Autowire
-import com.mchange.v2.c3p0.ComboPooledDataSource
-
 interface DataSource {
     fun open(): Connection
     fun close(conn: Connection)
