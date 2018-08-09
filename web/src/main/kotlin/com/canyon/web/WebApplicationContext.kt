@@ -15,6 +15,8 @@ class WebApplicationContext : Boot() {
     private var handlerValueParser: HandlerValueParser? = null
     @Autowire
     private var webParameterParser: WebParameterParser? = null
+    @Autowire
+    private var config: WebConfig? = null
 
     override fun run() {
         val routers = mutableListOf<WebRouter>()
@@ -39,7 +41,7 @@ class WebApplicationContext : Boot() {
                 }
             }
         }
-        vertx.createHttpServer().requestHandler(router::accept).listen(8080)
+        vertx.createHttpServer().requestHandler(router::accept).listen(config!!.port)
     }
 
     override fun destory() {

@@ -4,6 +4,7 @@ import com.canyon.commons.HardwareUtils
 import com.canyon.config.ConfigFactory
 import com.canyon.inject.*
 import com.canyon.web.Controller
+import com.typesafe.config.Config
 import org.apache.logging.log4j.LogManager
 import kotlin.reflect.KClass
 
@@ -31,6 +32,7 @@ class ApplicationContext(
 
         preloadingClasses += InjectorContext::class to this.injectorContext
         preloadingClasses += ApplicationContext::class to this
+        preloadingClasses += Config::class to ConfigFactory.config
     }
 
     override fun run() {
@@ -63,7 +65,7 @@ class ApplicationContext(
     }
 
     private fun showBanner() {
-        val banner = javaClass.getResource("/banner.txt").readText().replace("{version}", ConfigFactory.getString("version"))
+        val banner = javaClass.getResource("/banner.txt").readText().replace("{version}", ConfigFactory.config.getString("version"))
         logger.info(banner)
     }
 }
