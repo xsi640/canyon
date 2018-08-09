@@ -37,8 +37,8 @@ class DependenciesProcessorImpl : DependenciesProcessor {
                             findKClassList(field, name, classes)
                     ))
                 } else {
-                    val named = field.getAnnotation(Named::class.java)
-                    val name = named?.value ?: ""
+                    @Suppress("NAME_SHADOWING")
+                    val name = field.getAnnotation(Named::class.java)?.value ?: ""
                     props.add(SingleDependentProperty(
                             name,
                             field,

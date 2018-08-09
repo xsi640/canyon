@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONException
 import com.alibaba.fastjson.JSONObject
 import com.alibaba.fastjson.serializer.SerializerFeature
+import java.io.InputStream
 
 object JsonUtils {
     init {
@@ -24,6 +25,10 @@ object JsonUtils {
         return JSON.parseObject(json, clazz)
     }
 
+    fun <T> parse(inputStream: InputStream, clazz: Class<T>): T {
+        return JSON.parseObject(inputStream, clazz)
+    }
+
     fun parseToJSONObject(json: String): JSONObject {
         return JSON.parseObject(json)
     }
@@ -38,6 +43,5 @@ object JsonUtils {
         } catch (e: JSONException) {
             parseToJSONObject(json)
         }
-
     }
 }

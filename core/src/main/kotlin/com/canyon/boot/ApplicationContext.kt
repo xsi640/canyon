@@ -1,5 +1,7 @@
 package com.canyon.boot
 
+import com.canyon.commons.HardwareUtils
+import com.canyon.config.ConfigFactory
 import com.canyon.inject.*
 import com.canyon.web.Controller
 import org.apache.logging.log4j.LogManager
@@ -14,7 +16,10 @@ class ApplicationContext(
 
     private val preloadingClasses = mutableMapOf<KClass<*>, Any>()
 
+    private val logger = LogManager.getLogger()
+
     init {
+        showBanner()
         val beanFactory = BeanFactoryImpl()
         super.injectorContext = InjectorContextImpl(
                 this.classScanner,
@@ -29,6 +34,16 @@ class ApplicationContext(
     }
 
     override fun run() {
+        logger.info("Starting Application on ${HardwareUtils.getComputerName()} with PID ${HardwareUtils.getPID()}")
+        initInject()
+    }
+
+    override fun destory() {
+
+    }
+
+    private fun initInject() {
+        logger.info("Preparing related components for dependency injection...")
         this.injectorContext.registAnnotation(Bean::class)
         this.injectorContext.registAnnotation(Controller::class)
         this.injectorContext.registSuperclass(Boot::class)
@@ -39,6 +54,7 @@ class ApplicationContext(
         }
 
         this.injectorContext.initialize()
+        logger.info("dependency injection ready.")
 
         this.injectorContext.getBeansFromSuper(Boot::class).forEach {
             it.injectorContext = super.injectorContext
@@ -46,7 +62,8 @@ class ApplicationContext(
         }
     }
 
-    override fun destory() {
-
+    private fun showBanner() {
+        val banner = javaClass.getResource("/banner.txt").readText().replace("{version}", ConfigFactory.getString("version"))
+        logger.info(banner)
     }
 }

@@ -27,9 +27,9 @@ class WebRouterParserImpl : WebRouterParser {
                     return@forEach
 
                 if (kFun.parameters.isNotEmpty()) {
-                    kFun.parameters.forEach { kParam ->
+                    for (kParam in kFun.parameters) {
                         if (kParam.name == null)
-                            return@forEach
+                            continue
                         val webParam = kParam.findAnnotation<WebParam>()
                         if (webParam == null) {
                             params.add(WebRouterParam(kParam.name!!, From.ANY, "", kParam.type))

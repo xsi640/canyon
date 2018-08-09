@@ -64,6 +64,7 @@ class InjectorContextImpl(
         return getBeansFromSuper(kClass)
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getBeansFromSuper(kClass: KClass<T>, name: String?): List<T> {
         if (!initialized) {
             throw InitializeException("InjectorContext initializing...")
@@ -82,6 +83,7 @@ class InjectorContextImpl(
         return result
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun <T : Any> getBean(kClass: KClass<T>): T {
         if (!initialized) {
             throw InitializeException("InjectorContext initializing...")

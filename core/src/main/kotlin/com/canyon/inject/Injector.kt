@@ -14,7 +14,7 @@ class InjectorImpl : Injector {
     private var injectorContext: InjectorContext? = null
 
     override fun <T : Any> getBean(kClass: KClass<T>): T {
-        return injectorContext!!.getBean(kClass) as T
+        return injectorContext!!.getBean(kClass)
     }
 
     override fun <T : Any> getBean(kClass: KClass<T>, name: String): T {
