@@ -26,8 +26,15 @@ class BeanFactoryImpl : BeanFactory {
         val instance = classType.kClass.createInstance()
         if (classType.dependentProperties.isNotEmpty()) {
             classType.dependentProperties.forEach { prop ->
-                val propInstance = this.createBean(prop.classType)
-                prop.field.set(instance, propInstance)
+                if (prop is SingleDependentProperty) {
+                    val propInstance = this.createBean(prop.classType)
+                    prop.field.set(instance, propInstance)
+                } else if (prop is MultiDependentProperty) {
+                    val lists = prop.classTypes.map {
+                        this.createBean(it)
+                    }
+                    prop.field.set(instance, lists)
+                }
             }
         }
         return instance

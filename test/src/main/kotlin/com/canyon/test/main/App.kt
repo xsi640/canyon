@@ -36,7 +36,7 @@ class App : Boot() {
 @Path("/aaa")
 class TestController {
     @Path("/hello")
-    @WebMethod(Method.GET, consumes = MIME.JSON)
+    @WebMethod(Method.GET, consumes = MediaType.APPLICATION_JSON)
     fun hello(name: String): String {
         return "nihao, $name"
     }

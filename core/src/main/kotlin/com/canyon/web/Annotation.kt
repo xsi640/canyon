@@ -16,8 +16,8 @@ annotation class Path(
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WebMethod(
         vararg val method: Method,
-        val consumes: MIME = MIME.FORM_URLENCODED,
-        val produces: MIME = MIME.FORM_URLENCODED
+        val consumes: MediaType = MediaType.ALL,
+        val produces: MediaType = MediaType.ALL
 )
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
@@ -36,18 +36,20 @@ enum class From {
     ANY, PATH, QUERY, FORM, HEADER, ENTITY, COOKIE
 }
 
-enum class MIME {
-    @Description("text/plain; charset=UTF-8")
-    TEXT_PLAIN,
-    @Description("text/html; charset=UTF-8")
-    TEXT_HTML,
+enum class MediaType {
+    @Description("*/*")
+    ALL,
     @Description("application/x-www-form-urlencoded")
-    FORM_URLENCODED,
+    APPLICATION_FORM_URLENCODED,
     @Description("application/json")
-    JSON
+    APPLICATION_JSON,
+    @Description("text/plain;charset=utf-8")
+    TEXT_PLAIN,
+    @Description("text/html;charset=utf-8")
+    TEXT_HTML
 }
 
-fun MIME.toText(): String {
+fun MediaType.toText(): String {
     this.declaringClass.annotations.forEach {
         if (it.annotationClass == Description::class) {
             return (it as Description).description

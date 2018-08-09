@@ -21,17 +21,38 @@ data class ClassType(
         val name: String,
         val kClass: KClass<*>,
         val single: Boolean,
-        val dependentProperties: MutableList<DependentProperty>
+        val dependentProperties: MutableList<BaseDependentProperty>
 )
 
 /**
  * 描述类中，需要依赖注入的属性
  */
-data class DependentProperty(
-        val name: String,
-        val field: Field,
-        val kClass: KClass<*>,
+abstract class BaseDependentProperty(
+        open val name: String,
+        open val field: Field,
+        open val kClass: KClass<*>
+)
+
+class SingleDependentProperty(
+        override val name: String,
+        override val field: Field,
+        override val kClass: KClass<*>,
         val classType: ClassType
+) : BaseDependentProperty(
+        name,
+        field,
+        kClass
+)
+
+class MultiDependentProperty(
+        override val name: String,
+        override val field: Field,
+        override val kClass: KClass<*>,
+        val classTypes: List<ClassType>
+) : BaseDependentProperty(
+        name,
+        field,
+        kClass
 )
 
 @Suppress("MoveLambdaOutsideParentheses")
@@ -40,7 +61,7 @@ class ClassScannerImpl : ClassScanner {
         val classList = ArrayList<ClassType>()
         val fastClasspathScanner = FastClasspathScanner(*packageNames.toTypedArray())
         fastClasspathScanner.matchClassesImplementing(interfaceClass.java, { clazz ->
-            classList.add(toClassType(clazz))
+            classList.add(clazz.toClassType())
         }).scan(threadCount)
         return classList
     }
@@ -49,7 +70,7 @@ class ClassScannerImpl : ClassScanner {
         val classList = ArrayList<ClassType>()
         val fastClasspathScanner = FastClasspathScanner(*packageNames.toTypedArray())
         fastClasspathScanner.matchSubclassesOf(superClass.java, { clazz ->
-            classList.add(toClassType(clazz))
+            classList.add(clazz.toClassType())
         }).scan(threadCount)
         return classList
     }
@@ -58,20 +79,19 @@ class ClassScannerImpl : ClassScanner {
         val classList = ArrayList<ClassType>()
         val fastClasspathScanner = FastClasspathScanner(*packageNames.toTypedArray())
         fastClasspathScanner.matchClassesWithAnnotation(annotationType.java, { clazz ->
-            classList.add(toClassType(clazz))
+            classList.add(clazz.toClassType())
         }).scan(threadCount)
         return classList
     }
 }
 
-fun toClassType(clazz: Class<*>): ClassType {
-    val bean = clazz.annotations.find(Bean::class)
-    val named = clazz.annotations.find(Named::class)
+fun Class<*>.toClassType(): ClassType {
+    val bean = this.annotations.find(Bean::class)
+    val named = this.annotations.find(Named::class)
     return ClassType(
-            if (named == null) "" else named.value,
-            Class.forName(clazz.canonicalName).kotlin as KClass<*>,
-            if (bean == null) false else bean.singleton,
+            named?.value ?: "",
+            Class.forName(this.canonicalName).kotlin as KClass<*>,
+            bean?.singleton ?: false,
             ArrayList()
-
     )
 }

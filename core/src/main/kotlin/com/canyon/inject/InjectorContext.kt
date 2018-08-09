@@ -18,14 +18,16 @@ interface InjectorContext {
     fun registAnnotation(kClass: KClass<*>)
     fun registSuperclass(kClass: KClass<*>)
     fun registInterface(kClass: KClass<*>)
+    fun addBean(any: Any)
     fun initialize()
 
-    fun getBean(kClass: KClass<*>): Any
-    fun <T : Any> getBeansFromSuper(kClass: KClass<T>): List<T>
-    fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>): List<Any>
-    fun <T : Any> getBeansFromInterface(kClass: KClass<T>): List<T>
+    fun <T : Any> getBean(kClass: KClass<T>): T
+    fun <T : Any> getBeansFromSuper(kClass: KClass<T>, name: String? = null): List<T>
+    fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>, name: String? = null): List<Any>
+    fun <T : Any> getBeansFromInterface(kClass: KClass<T>, name: String? = null): List<T>
 }
 
+@Bean(singleton = true)
 class InjectorContextImpl(
         private val classScanner: ClassScanner,
         private val dependenciesProcessor: DependenciesProcessor,
@@ -40,44 +42,53 @@ class InjectorContextImpl(
     private var regInterfaceClasses = mutableListOf<KClass<*>>()
     private var excludedClasses = mutableSetOf<KClass<*>>()
 
-    override fun getBean(kClass: KClass<*>): Any {
-        if (!initialized) {
-            throw InitializeException("InjectorContext initializing...")
-        }
-        val classType: ClassType? = classTypeCached.get(kClass)
-                ?: throw NotFoundBeanException("Not found Bean class{$kClass}.")
-        return beanFactory.createBean(classType!!)
-    }
-
-    override fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>): List<Any> {
+    override fun <T : Annotation> getBeansFromAnnotation(kClass: KClass<T>, name: String?): List<Any> {
         if (!initialized) {
             throw InitializeException("InjectorContext initializing...")
         }
         val result = mutableListOf<Any>()
         classTypeCached.keys.forEach {
             if (it.annotations.firstOrNull { it.annotationClass == kClass } != null) {
-                result.add(this.getBean(it))
+                if (name == null) {
+                    result.add(this.getBean(it))
+                } else if (classTypeCached[it]!!.name == name) {
+                    result.add(this.getBean(it))
+                    return@forEach
+                }
             }
         }
         return result
     }
 
-    override fun <T : Any> getBeansFromInterface(kClass: KClass<T>): List<T> {
+    override fun <T : Any> getBeansFromInterface(kClass: KClass<T>, name: String?): List<T> {
         return getBeansFromSuper(kClass)
     }
 
-    override fun <T : Any> getBeansFromSuper(kClass: KClass<T>): List<T> {
+    override fun <T : Any> getBeansFromSuper(kClass: KClass<T>, name: String?): List<T> {
         if (!initialized) {
             throw InitializeException("InjectorContext initializing...")
         }
         val result = mutableListOf<T>()
         classTypeCached.keys.forEach {
             if (it.superclasses.contains(kClass)) {
-                @Suppress("UNCHECKED_CAST")
-                result.add(this.getBean(it) as T)
+                if (name == null) {
+                    result.add(this.getBean(it) as T)
+                } else if (classTypeCached[it]!!.name == name) {
+                    result.add(this.getBean(it) as T)
+                    return@forEach
+                }
             }
         }
         return result
+    }
+
+    override fun <T : Any> getBean(kClass: KClass<T>): T {
+        if (!initialized) {
+            throw InitializeException("InjectorContext initializing...")
+        }
+        val classType: ClassType? = classTypeCached[kClass]
+                ?: throw NotFoundBeanException("Not found Bean class{$kClass}.")
+        return beanFactory.createBean(classType!!) as T
     }
 
     override fun registAnnotation(kClass: KClass<*>) {
@@ -95,6 +106,13 @@ class InjectorContextImpl(
     override fun excludedClass(kClass: KClass<*>) {
         excludedClasses.add(kClass)
     }
+
+    override fun addBean(any: Any) {
+        val classType = any::class.java.toClassType()
+        classTypeCached[any::class] = classType
+        injectedCached[classType] = any
+    }
+
 
     override fun initialize() {
         classTypeCached.clear()
@@ -120,7 +138,7 @@ class InjectorContextImpl(
 
         mutableList.forEach { classType ->
             if (excludedClasses.find { classType.kClass == it } == null) {
-                classTypeCached.put(classType.kClass, classType)
+                classTypeCached[classType.kClass] = classType
             }
         }
 

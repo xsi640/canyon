@@ -3,15 +3,16 @@ package com.canyon.boot
 import com.canyon.inject.*
 import com.canyon.web.Controller
 import org.apache.logging.log4j.LogManager
+import kotlin.reflect.KClass
 
+@Bean(singleton = true)
 class ApplicationContext(
         vararg packages: String
 ) : Boot() {
+    private var basePackages = packages.toMutableList()
+    private var classScanner: ClassScanner = ClassScannerImpl()
 
-    val logger = LogManager.getLogger()
-
-    var basePackages = packages.toMutableList()
-    var classScanner: ClassScanner = ClassScannerImpl()
+    private val preloadingClasses = mutableMapOf<KClass<*>, Any>()
 
     init {
         val beanFactory = BeanFactoryImpl()
@@ -22,13 +23,21 @@ class ApplicationContext(
                 this.basePackages
         )
         beanFactory.injectorContext = super.injectorContext
+
+        preloadingClasses += InjectorContext::class to this.injectorContext
+        preloadingClasses += ApplicationContext::class to this
     }
 
     override fun run() {
         this.injectorContext.registAnnotation(Bean::class)
         this.injectorContext.registAnnotation(Controller::class)
         this.injectorContext.registSuperclass(Boot::class)
-        this.injectorContext.excludedClass(ApplicationContext::class)
+
+        this.preloadingClasses.forEach { t, u ->
+            this.injectorContext.excludedClass(t)
+            this.injectorContext.addBean(u)
+        }
+
         this.injectorContext.initialize()
 
         this.injectorContext.getBeansFromSuper(Boot::class).forEach {
