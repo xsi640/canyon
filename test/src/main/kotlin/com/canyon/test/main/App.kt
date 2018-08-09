@@ -4,6 +4,7 @@ import com.canyon.boot.ApplicationContext
 import com.canyon.boot.Boot
 import com.canyon.inject.Autowire
 import com.canyon.inject.Bean
+import com.canyon.web.*
 
 fun main(args: Array<String>) {
     ApplicationContext("com.canyon").run()
@@ -29,4 +30,14 @@ class App : Boot() {
     override fun destory() {
     }
 
+}
+
+@Controller
+@Path("/aaa")
+class TestController {
+    @Path("/hello")
+    @WebMethod(Method.GET, consumes = MIME.JSON)
+    fun hello(name: String): String {
+        return "nihao, $name"
+    }
 }

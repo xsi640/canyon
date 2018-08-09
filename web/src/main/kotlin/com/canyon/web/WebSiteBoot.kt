@@ -5,6 +5,7 @@ import io.vertx.core.Vertx
 import io.vertx.core.http.HttpMethod
 import io.vertx.ext.web.Router
 import kotlin.reflect.KFunction
+import kotlin.reflect.KType
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
@@ -27,14 +28,15 @@ class WebSiteBoot : Boot() {
             if (r.method.isNotEmpty()) {
                 for (method in r.method) {
                     router.route(method.toMethod(), r.path)
-                            .consumes(r.consumes)
-                            .produces(r.produces)
+                            .consumes(r.consumes.toText())
+                            .produces(r.produces.toText())
                             .handler { rc ->
                                 RequestHandler(r).handle(rc)
                             }
                 }
             }
         }
+        vertx.createHttpServer().requestHandler(router::accept).listen(8080)
     }
 
     override fun destory() {
@@ -44,16 +46,18 @@ class WebSiteBoot : Boot() {
 data class WebRouter(
         val path: String,
         val method: List<Method>,
-        val consumes: String,
-        val produces: String,
+        val consumes: MIME,
+        val produces: MIME,
         val webParam: List<WebRouterParam>,
-        val function: KFunction<*>
+        val function: KFunction<*>,
+        val controller: Any
 )
 
 data class WebRouterParam(
         val name: String,
         val from: From,
-        val default: String
+        val default: String,
+        val kType: KType
 )
 
 fun Method.toMethod(): HttpMethod {
@@ -84,12 +88,14 @@ fun toWebRouter(c: Any): List<WebRouter> {
                 return@forEach
 
             if (kFun.parameters.isNotEmpty()) {
-                kFun.parameters.map { kParam ->
+                kFun.parameters.forEach { kParam ->
+                    if (kParam.name == null)
+                        return@forEach
                     val webParam = kParam.findAnnotation<WebParam>()
                     if (webParam == null) {
-                        WebRouterParam(kParam.kind.name, From.ANY, "")
+                        params.add(WebRouterParam(kParam.name!!, From.ANY, "", kParam.type))
                     } else {
-                        WebRouterParam(webParam.name, webParam.from, webParam.default)
+                        params.add(WebRouterParam(webParam.name, webParam.from, webParam.default, kParam.type))
                     }
                 }
             }
@@ -98,7 +104,8 @@ fun toWebRouter(c: Any): List<WebRouter> {
                     webMethod.consumes,
                     webMethod.produces,
                     params,
-                    kFun))
+                    kFun,
+                    c))
         }
     }
     return result

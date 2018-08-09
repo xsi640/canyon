@@ -55,7 +55,7 @@ class InjectorContextImpl(
         }
         val result = mutableListOf<Any>()
         classTypeCached.keys.forEach {
-            if (it.annotations.firstOrNull { it::class == kClass } != null) {
+            if (it.annotations.firstOrNull { it.annotationClass == kClass } != null) {
                 result.add(this.getBean(it))
             }
         }
