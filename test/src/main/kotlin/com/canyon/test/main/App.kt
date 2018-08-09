@@ -4,24 +4,39 @@ import com.canyon.boot.ApplicationContext
 import com.canyon.boot.Boot
 import com.canyon.inject.Autowire
 import com.canyon.inject.Bean
+import com.canyon.inject.Named
 import com.canyon.web.*
 
 fun main(args: Array<String>) {
     ApplicationContext("com.canyon").run()
 }
 
-
+@Named("bb")
 @Bean
-class A {
-    fun test() {
-        println("asdadad")
+class B : AA() {
+    override fun test() {
+        println("bbbbbbbbbbb")
     }
+
+}
+
+@Named("aa")
+@Bean
+class A : AA() {
+    override fun test() {
+        println("aaaaaaaaaaa")
+    }
+}
+
+abstract class AA {
+    abstract fun test()
 }
 
 class App : Boot() {
 
+    @Named("bb")
     @Autowire
-    var a: A? = null
+    var a: AA? = null
 
     override fun run() {
         a!!.test()

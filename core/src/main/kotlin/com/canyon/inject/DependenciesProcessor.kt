@@ -55,8 +55,10 @@ class DependenciesProcessorImpl : DependenciesProcessor {
     private fun findKClassList(field: Field, name: String, classes: List<ClassType>): List<ClassType> {
         val result: List<ClassType> = classes.filter {
             var flag = field.isChildrenClass(it.kClass)
-            if (name.isNotEmpty()) {
-                flag = it.name == name
+            if (flag) {
+                if (name.isNotEmpty()) {
+                    flag = it.name == name
+                }
             }
             flag
         }
@@ -68,11 +70,14 @@ class DependenciesProcessorImpl : DependenciesProcessor {
     private fun findKClass(field: Field, name: String, classes: List<ClassType>): ClassType {
         val result: List<ClassType> = classes.filter {
             var flag = field.isChildrenClass(it.kClass)
-            if (name.isNotEmpty()) {
-                flag = it.name == name
+            if (flag) {
+                if (name.isNotEmpty()) {
+                    flag = it.name == name
+                }
             }
             flag
         }
+
         if (result.isEmpty())
             throw NotfoundDependencies("Not found Inject Class from field{${field.name}} in class{${field.type}}.")
         return result[0]
