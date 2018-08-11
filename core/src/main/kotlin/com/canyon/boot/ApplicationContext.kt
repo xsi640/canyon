@@ -57,9 +57,9 @@ class ApplicationContext(
         }
 
         this.injectorContext.initialize()
-        logger.info("dependency injection ready.")
+        logger.info("Dependency injection ready.")
 
-        this.injectorContext.getBeansFromSuper(Boot::class).forEach {
+        this.injectorContext.getBeansFromSuper(Boot::class).sortedBy { it.order }.forEach {
             it.injectorContext = super.injectorContext
             it.run()
         }

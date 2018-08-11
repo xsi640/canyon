@@ -7,8 +7,8 @@ import kotlin.reflect.KType
 data class WebRouter(
         val path: String,
         val method: List<Method>,
-        val consumes: MediaType,
-        val produces: MediaType,
+        val requestMediaType: MediaType,
+        val responseMediaType: MediaType,
         val webParam: List<WebRouterParam>,
         val function: KFunction<*>,
         val controller: Any

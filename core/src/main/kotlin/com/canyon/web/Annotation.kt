@@ -16,14 +16,14 @@ annotation class Path(
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WebMethod(
         vararg val method: Method,
-        val consumes: MediaType = MediaType.ALL,
-        val produces: MediaType = MediaType.ALL
+        val requestMediaType: MediaType = MediaType.ALL,
+        val responseMediaType: MediaType = MediaType.ALL
 )
 
 @Target(AnnotationTarget.VALUE_PARAMETER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WebParam(
-        val name: String,
+        val name: String = "",
         val from: From = From.ANY,
         val default: String = ""
 )
@@ -50,10 +50,5 @@ enum class MediaType {
 }
 
 fun MediaType.toText(): String {
-    this.declaringClass.annotations.forEach {
-        if (it.annotationClass == Description::class) {
-            return (it as Description).description
-        }
-    }
-    return ""
+    return this::class.java.getField(this.name).getAnnotation(Description::class.java).description
 }

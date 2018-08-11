@@ -14,7 +14,7 @@ class RequestHandler(
 ) : Handler<RoutingContext> {
     override fun handle(rc: RoutingContext) {
         val response = rc.response()
-
+        response.isChunked = true
         val func = webRouter.function
         val parameters = arrayOfNulls<Any?>(webRouter.webParam.size)
         for (i in 0 until parameters.size) {
@@ -24,9 +24,9 @@ class RequestHandler(
         }
         val ret = func.call(webRouter.controller, *parameters)
         if (func.returnType != Unit::class && ret != null) {
-            response.putHeader("content-type", webRouter.consumes.toText())
+            response.putHeader("content-type", webRouter.responseMediaType.toText())
             if (ret !== Unit) {
-                writeResponse(response, webRouter.consumes, ret)
+                writeResponse(response, webRouter.responseMediaType, ret)
             }
         }
     }
@@ -36,7 +36,7 @@ class RequestHandler(
             return
         when (mediaType) {
             MediaType.APPLICATION_JSON -> response.end(JsonUtils.toString(obj))
-            else -> response.write(obj.toString())
+            else -> response.end(obj.toString())
         }
     }
 }

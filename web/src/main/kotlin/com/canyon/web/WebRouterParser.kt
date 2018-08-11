@@ -34,14 +34,18 @@ class WebRouterParserImpl : WebRouterParser {
                         if (webParam == null) {
                             params.add(WebRouterParam(kParam.name!!, From.ANY, "", kParam.type))
                         } else {
-                            params.add(WebRouterParam(webParam.name, webParam.from, webParam.default, kParam.type))
+                            if(webParam.name.isEmpty()){
+                                params.add(WebRouterParam(kParam.name!!, webParam.from, webParam.default, kParam.type))
+                            }else{
+                                params.add(WebRouterParam(webParam.name, webParam.from, webParam.default, kParam.type))
+                            }
                         }
                     }
                 }
                 result.add(WebRouter(strPath,
                         webMethod.method.toList(),
-                        webMethod.consumes,
-                        webMethod.produces,
+                        webMethod.requestMediaType,
+                        webMethod.responseMediaType,
                         params,
                         kFun,
                         controller))
