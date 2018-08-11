@@ -48,6 +48,7 @@ class ApplicationContext(
         logger.info("Preparing related components for dependency injection...")
         this.injectorContext.registAnnotation(Bean::class)
         this.injectorContext.registAnnotation(Controller::class)
+        this.injectorContext.registInterface(InjectProvider::class)
         this.injectorContext.registSuperclass(Boot::class)
 
         this.preloadingClasses.forEach { t, u ->

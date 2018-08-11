@@ -4,6 +4,7 @@ import com.canyon.boot.Boot
 import com.canyon.inject.Autowire
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
+import org.apache.logging.log4j.Logger
 
 class WebApplicationContext : Boot() {
 
@@ -17,8 +18,11 @@ class WebApplicationContext : Boot() {
     private var webParameterParser: WebParameterParser? = null
     @Autowire
     private var config: WebConfig? = null
+    @Autowire
+    private var logger: Logger? = null
 
     override fun run() {
+        logger!!.info("Prepare to start the web server...port:${config!!.port}")
         val routers = mutableListOf<WebRouter>()
         val controllers = super.injectorContext.getBeansFromAnnotation(Controller::class)
         for (controller in controllers) {
@@ -42,6 +46,7 @@ class WebApplicationContext : Boot() {
             }
         }
         vertx.createHttpServer().requestHandler(router::accept).listen(config!!.port)
+        logger!!.info("Web server startup completed. port:${config!!.port}")
     }
 
     override fun destory() {

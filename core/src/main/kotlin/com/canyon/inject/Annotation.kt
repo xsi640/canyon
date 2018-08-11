@@ -25,11 +25,12 @@ annotation class Named(
         val value: String = ""
 )
 
+@Bean(singleton = true)
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Config(
-        val fileName: String = "",
-        val path: String = ""
+        val path: String = "",
+        val fileName: String = ""
 )
 
 @Target(AnnotationTarget.FIELD)

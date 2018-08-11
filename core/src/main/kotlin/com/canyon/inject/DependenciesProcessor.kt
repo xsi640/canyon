@@ -1,11 +1,12 @@
 package com.canyon.inject
 
+import com.canyon.commons.findOne
 import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.superclasses
-import kotlin.reflect.jvm.jvmName
 
 /**
  * 依赖处理器，从Classes中整理依赖关系
@@ -15,7 +16,15 @@ interface DependenciesProcessor {
 }
 
 class DependenciesProcessorImpl : DependenciesProcessor {
+
+    private val providers = mutableListOf<InjectProvider>()
+
     override fun process(classes: List<ClassType>) {
+        classes.forEach {
+            if (it.kClass.superclasses.contains(InjectProvider::class))
+                providers.add(it.kClass.createInstance() as InjectProvider)
+        }
+
         classes.forEach { classType ->
             classType.dependentProperties.addAll(grunt(classType, classes))
         }
@@ -34,6 +43,7 @@ class DependenciesProcessorImpl : DependenciesProcessor {
                             "",
                             field,
                             field.type.kotlin,
+                            findProvider(field),
                             findKClassList(field, name, classes)
                     ))
                 } else {
@@ -43,6 +53,7 @@ class DependenciesProcessorImpl : DependenciesProcessor {
                             name,
                             field,
                             field.type.kotlin,
+                            findProvider(field),
                             findKClass(field, name, classes)
                     ))
                 }
@@ -79,8 +90,15 @@ class DependenciesProcessorImpl : DependenciesProcessor {
         }
 
         if (result.isEmpty())
-            throw NotfoundDependencies("Not found Inject Class from field{${field.name}} in class{${field.type}}.")
+            return field.type.toClassType()
         return result[0]
+    }
+
+    private fun findProvider(field: Field): InjectProvider? {
+        val clazz = field.type
+        return providers.findOne {
+            it.isMatch(clazz.kotlin)
+        }
     }
 }
 

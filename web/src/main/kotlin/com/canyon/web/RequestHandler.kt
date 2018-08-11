@@ -29,7 +29,6 @@ class RequestHandler(
                 writeResponse(response, webRouter.consumes, ret)
             }
         }
-        response.end()
     }
 
     private fun writeResponse(response: HttpServerResponse, mediaType: MediaType, obj: Any?) {

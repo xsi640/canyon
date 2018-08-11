@@ -30,29 +30,34 @@ data class ClassType(
 abstract class BaseDependentProperty(
         open val name: String,
         open val field: Field,
-        open val kClass: KClass<*>
+        open val kClass: KClass<*>,
+        open val provider: InjectProvider?
 )
 
 class SingleDependentProperty(
         override val name: String,
         override val field: Field,
         override val kClass: KClass<*>,
+        override val provider: InjectProvider?,
         val classType: ClassType
 ) : BaseDependentProperty(
         name,
         field,
-        kClass
+        kClass,
+        provider
 )
 
 class MultiDependentProperty(
         override val name: String,
         override val field: Field,
         override val kClass: KClass<*>,
+        override val provider: InjectProvider?,
         val classTypes: List<ClassType>
 ) : BaseDependentProperty(
         name,
         field,
-        kClass
+        kClass,
+        provider
 )
 
 @Suppress("MoveLambdaOutsideParentheses")

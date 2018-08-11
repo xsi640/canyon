@@ -8,5 +8,5 @@ import kotlin.reflect.KClass
  */
 interface InjectProvider {
     fun isMatch(kClass: KClass<*>): Boolean
-    fun <T> match(kClass: KClass<*>): T
+    fun create(objClass: KClass<*>, fieldClass: KClass<*>): Any
 }

@@ -26,17 +26,35 @@ class BeanFactoryImpl : BeanFactory {
         val instance = classType.kClass.createInstance()
         if (classType.dependentProperties.isNotEmpty()) {
             classType.dependentProperties.forEach { prop ->
-                if (prop is SingleDependentProperty) {
-                    val propInstance = this.createBean(prop.classType)
-                    prop.field.set(instance, propInstance)
-                } else if (prop is MultiDependentProperty) {
-                    val lists = prop.classTypes.map {
-                        this.createBean(it)
+                if (prop.provider != null) {
+                    if (prop is SingleDependentProperty) {
+                        val propInstance = this.createByProvider(classType, prop.classType, prop.provider!!)
+                        prop.field.set(instance, propInstance)
+                    } else if (prop is MultiDependentProperty) {
+                        val lists = prop.classTypes.map {
+                            this.createByProvider(classType, it, prop.provider!!)
+                        }
+                        prop.field.set(instance, lists)
                     }
-                    prop.field.set(instance, lists)
+                } else {
+                    if (prop is SingleDependentProperty) {
+                        val propInstance = this.createBean(prop.classType)
+                        prop.field.set(instance, propInstance)
+                    } else if (prop is MultiDependentProperty) {
+                        val lists = prop.classTypes.map {
+                            this.createBean(it)
+                        }
+                        prop.field.set(instance, lists)
+                    }
                 }
+
+
             }
         }
         return instance
+    }
+
+    private fun createByProvider(objClass: ClassType, fieldClassType: ClassType, provider: InjectProvider): Any {
+        return provider.create(objClass.kClass, fieldClassType.kClass)
     }
 }
