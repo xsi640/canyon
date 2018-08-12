@@ -46,7 +46,8 @@ enum class MediaType {
     @Description("text/plain;charset=utf-8")
     TEXT_PLAIN,
     @Description("text/html;charset=utf-8")
-    TEXT_HTML
+    TEXT_HTML,
+
 }
 
 fun MediaType.toText(): String {

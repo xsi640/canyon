@@ -2,6 +2,8 @@ package com.canyon.test.main
 
 import com.canyon.boot.ApplicationContext
 import com.canyon.web.*
+import io.vertx.core.http.HttpServerRequest
+import io.vertx.ext.web.FileUpload
 
 fun main(args: Array<String>) {
     ApplicationContext("com.canyon").run()
@@ -16,9 +18,17 @@ data class Person(
 @Path("/aaa")
 class TestController {
     @Path("/hello")
-    @WebMethod(Method.GET, responseMediaType = MediaType.APPLICATION_JSON, requestMediaType = MediaType.APPLICATION_FORM_URLENCODED)
-    fun hello(@WebParam(from = From.QUERY) id: Int,
-              @WebParam(from = From.QUERY) p: Person): Person {
-        return Person(p.name + "1", p.age + 1 + id)
+    @WebMethod(Method.GET, responseMediaType = MediaType.APPLICATION_JSON, requestMediaType = MediaType.ALL)
+    fun hello(request: HttpServerRequest): Person {
+        return Person("11", 2)
+    }
+
+    @Path("/upload")
+    @WebMethod(Method.POST, requestMediaType = MediaType.ALL)
+    fun upload(@WebParam(name = "file1") files: List<FileUpload>) {
+        files.forEach {
+            println(it.name())
+            println(it.fileName())
+        }
     }
 }

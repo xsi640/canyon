@@ -5,7 +5,7 @@ import java.lang.reflect.ParameterizedType
 import java.lang.reflect.Type
 import kotlin.reflect.KType
 
-class TypeRef<T> {
+interface TypeRef<T> {
     val javaType: Type
         get() {
             return (this.javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0]

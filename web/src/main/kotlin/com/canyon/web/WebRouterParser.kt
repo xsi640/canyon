@@ -1,6 +1,8 @@
 package com.canyon.web
 
+import com.canyon.core.TypeRef
 import com.canyon.inject.Bean
+import io.vertx.ext.web.FileUpload
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.functions
 
@@ -34,9 +36,13 @@ class WebRouterParserImpl : WebRouterParser {
                         if (webParam == null) {
                             params.add(WebRouterParam(kParam.name!!, From.ANY, "", kParam.type))
                         } else {
-                            if(webParam.name.isEmpty()){
-                                params.add(WebRouterParam(kParam.name!!, webParam.from, webParam.default, kParam.type))
-                            }else{
+                            if (webParam.name.isEmpty()) {
+                                if (kParam.type == object : TypeRef<List<FileUpload>> {}.kType) {
+                                    params.add(WebRouterParam("", webParam.from, webParam.default, kParam.type))
+                                } else {
+                                    params.add(WebRouterParam(kParam.name!!, webParam.from, webParam.default, kParam.type))
+                                }
+                            } else {
                                 params.add(WebRouterParam(webParam.name, webParam.from, webParam.default, kParam.type))
                             }
                         }
