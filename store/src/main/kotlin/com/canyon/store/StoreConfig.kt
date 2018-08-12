@@ -1,6 +1,6 @@
 package com.canyon.store
 
-open class StoreConfig(
+class StoreConfig(
         val driverClass: String,
         val jdbcUrl: String,
         val user: String,
