@@ -15,7 +15,7 @@ annotation class Path(
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class WebMethod(
-        vararg val method: Method,
+        vararg val method: HttpMethod,
         val requestMediaType: MediaType = MediaType.ALL,
         val responseMediaType: MediaType = MediaType.ALL
 )
@@ -28,7 +28,7 @@ annotation class WebParam(
         val default: String = ""
 )
 
-enum class Method {
+enum class HttpMethod {
     GET, POST, HEAD, PUT, DELETE
 }
 

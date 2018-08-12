@@ -4,15 +4,22 @@ import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
-class DynamicInvocationHandler(private val methodInvoker: (clazz: Class<*>, method: Method, args: Array<Any>) -> Any?) : InvocationHandler {
+typealias MethodInvoker = (kType: KType, method: Method, args: Array<Any>) -> Any
+
+class DynamicInvocationHandler(
+        private val kType: KType,
+        private val methodInvoker: MethodInvoker
+) : InvocationHandler {
     override fun invoke(proxy: Any, method: Method, args: Array<Any>): Any? {
-        return methodInvoker(proxy::class.java, method, args)
+        return methodInvoker(kType, method, args)
     }
 }
 
 object ProxyFactory {
-    fun newInstance(clazz: KClass<*>, methodInvoker: (clazz: Class<*>, method: Method, args: Array<Any>) -> Any): Any? {
-        return Proxy.newProxyInstance(clazz.java.classLoader, arrayOf<Class<*>>(clazz.java), DynamicInvocationHandler(methodInvoker))
+    fun newInstance(kType: KType, invoker: MethodInvoker): Any {
+        val clazz = (kType.classifier!! as KClass<*>).java
+        return Proxy.newProxyInstance(clazz.classLoader, arrayOf(clazz), DynamicInvocationHandler(kType, invoker))
     }
 }

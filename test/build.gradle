@@ -1,4 +1,7 @@
 dependencies {
     compile project(":core")
-    compile project(":web")
+//    compile project(":web")
+    compile project(":store")
+
+    compile "mysql:mysql-connector-java:$mysql"
 }

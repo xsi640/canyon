@@ -1,12 +1,11 @@
 package com.canyon.web
 
-import io.vertx.core.http.HttpMethod
 import kotlin.reflect.KFunction
 import kotlin.reflect.KType
 
 data class WebRouter(
         val path: String,
-        val method: List<Method>,
+        val method: List<HttpMethod>,
         val requestMediaType: MediaType,
         val responseMediaType: MediaType,
         val webParam: List<WebRouterParam>,
@@ -21,13 +20,13 @@ data class WebRouterParam(
         val kType: KType
 )
 
-fun Method.toMethod(): HttpMethod {
+fun HttpMethod.toMethod(): io.vertx.core.http.HttpMethod {
     return when (this) {
-        Method.GET -> HttpMethod.GET
-        Method.POST -> HttpMethod.POST
-        Method.HEAD -> HttpMethod.HEAD
-        Method.PUT -> HttpMethod.PUT
-        Method.DELETE -> HttpMethod.DELETE
+        HttpMethod.GET -> io.vertx.core.http.HttpMethod.GET
+        HttpMethod.POST -> io.vertx.core.http.HttpMethod.POST
+        HttpMethod.HEAD -> io.vertx.core.http.HttpMethod.HEAD
+        HttpMethod.PUT -> io.vertx.core.http.HttpMethod.PUT
+        HttpMethod.DELETE -> io.vertx.core.http.HttpMethod.DELETE
         else -> throw IllegalArgumentException("Can't support The method.")
     }
 }

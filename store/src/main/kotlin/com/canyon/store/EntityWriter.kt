@@ -1,8 +1,8 @@
 package com.canyon.store
 
 import com.canyon.core.Reflection
-import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
 import java.lang.reflect.Method
+import kotlin.reflect.KType
 
 interface EntityWriter<T> {
     fun insert(t: T): T
@@ -14,11 +14,12 @@ interface EntityWriter<T> {
 }
 
 interface EntityWriterExecutor {
-    fun execute(clazz: Class<*>, method: Method, args: Array<Any>): Any?
+    fun execute(kType: KType, method: Method, args: Array<Any>): Any?
 }
 
 class EntityWriterExecutorImpl : EntityWriterExecutor {
-    override fun execute(clazz: Class<*>, method: Method, args: Array<Any>): Any? {
+    override fun execute(kType: KType, method: Method, args: Array<Any>): Any? {
+        val clazz = kType.classifier!!.javaClass
         if (!EntityWriter::class.java.isAssignableFrom(clazz)) {
             throw IllegalArgumentException("The class not impl entityWriter")
         }
@@ -28,12 +29,11 @@ class EntityWriterExecutorImpl : EntityWriterExecutor {
         }
         when (method.name) {
             "insert" -> {
-                if(args[0].javaClass == entityClazz){
+                if (args[0].javaClass == entityClazz) {
 
                 }
             }
         }
         TODO("反射数据库操作")
     }
-
 }

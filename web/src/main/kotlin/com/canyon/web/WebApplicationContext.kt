@@ -9,6 +9,7 @@ import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.StaticHandler
 import org.apache.logging.log4j.Logger
+import java.nio.file.Files
 
 class WebApplicationContext : Boot() {
 
@@ -44,9 +45,11 @@ class WebApplicationContext : Boot() {
 
         val router = Router.router(vertx)
         router.route().handler(CookieHandler.create())
+        val tmpdir = Files.createTempDirectory(config!!.uploadTempDir)
         val bodyHandler = BodyHandler.create()
                 .setMergeFormAttributes(false)
                 .setDeleteUploadedFilesOnEnd(true)
+                .setUploadsDirectory(tmpdir.toString())
         router.route().handler(bodyHandler)
         for (r in routers) {
             if (r.method.isNotEmpty()) {

@@ -1,15 +1,14 @@
 package com.canyon.store
 
+import com.canyon.inject.Autowire
+import com.canyon.inject.Bean
+import com.canyon.inject.Named
+import com.zaxxer.hikari.HikariDataSource
+import java.sql.Connection
+
 interface DataSource {
     fun open(): Connection
     fun close(conn: Connection)
-}
-
-interface Connection {
-    fun beginTransaction()
-    fun commit()
-    fun rollback()
-    fun close()
 }
 
 interface DatabaseCommand {
@@ -19,29 +18,42 @@ interface DatabaseCommand {
     fun execute(sql: String)
 }
 
-//@Autowire
-//class C3P0DataSource : DataSource {
-//
-//    private var dataSource: ComboPooledDataSource = ComboPooledDataSource()
-//    private var config = ConfigFactory.load("dataSource", StoreConfig::class.java)
-//
-//    init {
-//        this.dataSource.driverClass = config.driverClass
-//        this.dataSource.jdbcUrl = config.jdbcUrl
-//        this.dataSource.user = config.user
-//        this.dataSource.password = config.password
-//
-//        this.dataSource.minPoolSize = config.pool.minPoolSize
-//        this.dataSource.acquireIncrement = config.pool.acquireIncrement
-//        this.dataSource.maxPoolSize = config.pool.maxPoolSize
-//        this.dataSource.maxIdleTime = config.pool.maxIdleTime
-//    }
-//
-//    override fun open(): Connection {
-//        return this.dataSource.connection
-//    }
-//
-//    override fun close(conn: Connection) {
-//        conn.close()
-//    }
-//}
+@Named("hikari")
+@Bean
+class HikariDataSource : DataSource {
+
+    @Autowire
+    private var config: StoreConfig? = null
+    private val dataSource: HikariDataSource by lazy {
+        initDataSource()
+    }
+
+    private fun initDataSource(): HikariDataSource {
+        val dataSource = HikariDataSource()
+        dataSource.jdbcUrl = config!!.jdbcUrl
+        dataSource.username = config!!.username
+        dataSource.password = config!!.password
+
+        val hikari = config!!.hikari!!
+
+        dataSource.isAutoCommit = hikari.autoCommit
+        dataSource.connectionTimeout = hikari.connectionTimeout
+        dataSource.idleTimeout = hikari.idleTimeout
+        dataSource.maxLifetime = hikari.maxLifetime
+        dataSource.minimumIdle = hikari.minimumIdle
+        dataSource.maximumPoolSize = hikari.maximumPoolSize
+
+        dataSource.addDataSourceProperty("cachePrepStmts", hikari.cachePrepStmts)
+        dataSource.addDataSourceProperty("prepStmtCacheSize", hikari.prepStmtCacheSize)
+        dataSource.addDataSourceProperty("prepStmtCacheSqlLimit", hikari.prepStmtCacheSqlLimit)
+        return dataSource
+    }
+
+    override fun open(): Connection {
+        return this.dataSource.connection
+    }
+
+    override fun close(conn: Connection) {
+        conn.close()
+    }
+}
