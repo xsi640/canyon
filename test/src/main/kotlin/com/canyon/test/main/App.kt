@@ -3,16 +3,24 @@ package com.canyon.test.main
 import com.canyon.boot.ApplicationContext
 import com.canyon.boot.Boot
 import com.canyon.inject.Autowire
+import com.canyon.inject.Bean
 import com.canyon.store.DataSource
 
 fun main(args: Array<String>) {
     ApplicationContext("com.canyon").run()
 }
 
+@Bean
+class A {
+
+}
+
 class StoreTest : Boot() {
 
     @Autowire
     var datasource: DataSource? = null
+    @Autowire
+    var a: A? = null
 
     override fun run() {
         datasource!!.open()

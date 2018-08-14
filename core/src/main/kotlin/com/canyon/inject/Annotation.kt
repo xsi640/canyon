@@ -3,7 +3,7 @@ package com.canyon.inject
 /**
  * 标注在属性上，表示这个属性的类型可以通过依赖注入直接创建
  */
-@Target(AnnotationTarget.FIELD, AnnotationTarget.CLASS)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Autowire
 

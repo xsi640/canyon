@@ -1,6 +1,7 @@
 package com.canyon.core
 
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl
+import kotlin.reflect.KClass
 
 object Reflection {
     fun getSuperInterfaceInnerClass(clazz: Class<*>, interfaceClass: Class<*>): Class<*>? {

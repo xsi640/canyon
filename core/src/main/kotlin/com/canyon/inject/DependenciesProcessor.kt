@@ -5,8 +5,14 @@ import java.lang.reflect.Field
 import java.lang.reflect.ParameterizedType
 import java.lang.reflect.WildcardType
 import kotlin.reflect.KClass
+import kotlin.reflect.KProperty1
 import kotlin.reflect.full.createInstance
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.superclasses
+import kotlin.reflect.jvm.isAccessible
+import kotlin.reflect.jvm.javaField
+import kotlin.reflect.jvm.jvmErasure
 
 /**
  * 依赖处理器，从Classes中整理依赖关系
@@ -32,30 +38,15 @@ class DependenciesProcessorImpl : DependenciesProcessor {
 
     private fun grunt(classType: ClassType, classes: List<ClassType>): List<BaseDependentProperty> {
         val props = ArrayList<BaseDependentProperty>()
-        classType.kClass.java.declaredFields.forEach { field ->
-            if (field.isAnnotationPresent(Autowire::class.java)) {
-                field.isAccessible = true
-                val named = field.getAnnotation(Named::class.java)
+        classType.kClass.declaredMemberProperties.forEach { kProp ->
+            if (kProp.findAnnotation<Autowire>() != null) {
+                kProp.isAccessible = true
+                val named = kProp.findAnnotation<Named>()
                 val name = named?.value ?: ""
-                if (field.type as Class<*> == List::class.java ||
-                        field.type as Class<*> == Set::class.java) {
-                    props.add(MultiDependentProperty(
-                            "",
-                            field,
-                            field.type.kotlin,
-                            findProvider(field),
-                            findKClassList(field, name, classes)
-                    ))
+                if (kProp.returnType.classifier == Collection::class) {
+                    props.add(MultiDependentProperty("", kProp.javaField!!, findProvider(kProp), findKClassList(kProp.javaField!!, name, classes)))
                 } else {
-                    @Suppress("NAME_SHADOWING")
-                    val name = field.getAnnotation(Named::class.java)?.value ?: ""
-                    props.add(SingleDependentProperty(
-                            name,
-                            field,
-                            field.type.kotlin,
-                            findProvider(field),
-                            findKClass(field, name, classes)
-                    ))
+                    props.add(SingleDependentProperty(name, kProp.javaField!!, findProvider(kProp), findKClass(kProp.javaField!!, name, classes)))
                 }
             }
         }
@@ -94,10 +85,9 @@ class DependenciesProcessorImpl : DependenciesProcessor {
         return result[0]
     }
 
-    private fun findProvider(field: Field): InjectProvider? {
-        val clazz = field.type
+    private fun <T, R> findProvider(kProp: KProperty1<T, R>): InjectProvider? {
         return providers.findOne {
-            it.isMatch(clazz.kotlin)
+            it.isMatch(kProp.returnType.jvmErasure)
         }
     }
 }
