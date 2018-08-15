@@ -11,13 +11,6 @@ interface DataSource {
     fun close(conn: Connection)
 }
 
-interface DatabaseCommand {
-    fun <T> query(sql: String, parameters: List<Any>, clazz: Class<T>): List<T>
-    fun <T> queryOne(sql: String, parameters: List<Any>, clazz: Class<T>): T
-    fun update(sql: String, parameters: List<Any>): Int
-    fun execute(sql: String)
-}
-
 @Named("hikari")
 @Bean
 class HikariDataSource : DataSource {

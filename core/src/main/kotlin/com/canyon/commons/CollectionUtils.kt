@@ -66,7 +66,7 @@ inline fun <reified T> List<T>.findOne(propName: String, propValue: Any): T? {
     return result
 }
 
-fun <T> List<T>.find(test: (t: T) -> Boolean, distinct: Boolean): List<T> {
+fun <T> List<T>.findAll(test: (t: T) -> Boolean, distinct: Boolean): List<T> {
     val result = ArrayList<T>()
     if (this.isEmpty())
         return result

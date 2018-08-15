@@ -2,7 +2,7 @@ package com.canyon.store
 
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
-annotation class Table(
+annotation class Entity(
         val name: String = "",
         val index: Array<Index>
 )
@@ -15,10 +15,8 @@ annotation class Id
 @Retention(AnnotationRetention.RUNTIME)
 annotation class Column(
         val name: String = "",
-        val unique: Boolean = false,
         val nullable: Boolean = true,
-        val length: Int = 255,
-        val columnDef: String = ""
+        val length: Int = 255
 )
 
 @Target
@@ -36,3 +34,9 @@ annotation class Version
 @Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class LastUpdateTime
+
+@Target(AnnotationTarget.FUNCTION)
+@Retention(AnnotationRetention.RUNTIME)
+annotation class Query(
+        val sql: String
+)
