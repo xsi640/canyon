@@ -16,6 +16,9 @@ annotation class Id
 annotation class Column(
         val name: String = "",
         val nullable: Boolean = true,
+        /**
+         * length == Int.MAX_VALUE 表示text
+         */
         val length: Int = 255
 )
 

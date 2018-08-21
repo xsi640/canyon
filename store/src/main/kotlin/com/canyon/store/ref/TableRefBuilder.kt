@@ -13,13 +13,18 @@ import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.jvm.jvmName
 
 interface TableRefBuilder {
+    /**
+     * 通过一个类型得到一个数据表实体结构
+     * @param kClass 实体类型
+     * @return 数据表结构
+     */
     fun build(kClass: KClass<*>): TableRef
 }
 
 @Bean
 class TableRefBuilderImpl : TableRefBuilder {
 
-    val cache = ConcurrentHashMap<KClass<*>, TableRef>()
+    private val cache = ConcurrentHashMap<KClass<*>, TableRef>()
 
     override fun build(kClass: KClass<*>): TableRef {
         val tableRef = cache[kClass]

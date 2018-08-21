@@ -17,7 +17,7 @@ interface EntityWriterBuilder {
 }
 
 @Bean
-class EntityWriterBuilderImpl:EntityWriterBuilder{
+class EntityWriterBuilderImpl : EntityWriterBuilder {
 
     override fun create(kClass: KClass<*>): EntityWriter<*> {
         TODO()
