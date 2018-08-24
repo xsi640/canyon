@@ -4,72 +4,116 @@ import com.canyon.core.Assertions
 import java.util.*
 
 abstract class Expression {
+    /**
+     * 等于
+     */
     fun eq(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.EQ, right)
     }
 
+    /**
+     * 不等于
+     */
     fun ne(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.NE, right)
     }
 
+    /**
+     * 大于
+     */
     fun gt(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.GT, right)
     }
 
+    /**
+     * 小于
+     */
     fun lt(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.LT, right)
     }
 
+    /**
+     * 大于等于
+     */
     fun gte(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.GTE, right)
     }
 
+    /**
+     * 小于等于
+     */
     fun lte(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.LTE, right)
     }
 
+    /**
+     * like
+     */
     fun like(right: Expression): Expression {
         return RelaExpression(this, RelaOperator.LIKE, right)
     }
 
+    /**
+     * IN
+     */
     fun in0(right: Collection<Expression>): Expression {
         return MultRelaExpression(this, MultiRelaOperator.IN, right)
     }
 
+    /**
+     * IN
+     */
     fun in0(vararg right: Expression): Expression {
         return this.in0(*right)
     }
 
+    /**
+     * NOT IN
+     */
     fun notin(right: Collection<Expression>): Expression {
         return MultRelaExpression(this, MultiRelaOperator.NOT_IN, right)
     }
 
+    /**
+     * NOT IN
+     */
     fun notin(vararg right: Expression): Expression {
         return this.notin(*right)
     }
 
+    /**
+     * 加
+     */
     fun plus(right: Expression): Expression {
         return ArithExpression(this, ArithOperator.PLUS, right)
     }
 
+    /**
+     * 减
+     */
     fun sub(right: Expression): Expression {
         return ArithExpression(this, ArithOperator.SUB, right)
     }
 
+    /**
+     * 乘
+     */
     fun mul(right: Expression): Expression {
         return ArithExpression(this, ArithOperator.MUL, right)
     }
 
+    /**
+     * 除
+     */
     fun div(right: Expression): Expression {
         return ArithExpression(this, ArithOperator.DIV, right)
     }
 
-    fun mod(right: Expression): Expression {
-        return ArithExpression(this, ArithOperator.MOD, right)
-    }
-
-    fun neg(right: Expression): Expression {
-        return ArithExpression(this, ArithOperator.NEG, right)
+    /**
+     * 取余
+     */
+    fun rem(right: Expression): Expression {
+        return ArithExpression(this, ArithOperator.REM, right)
     }
 }
 
@@ -78,7 +122,7 @@ data class Field(
 ) : Expression()
 
 data class Fields(
-        val fieldNames: Array<String>
+        val fieldNames: Array<out String>
 ) : Expression() {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -194,11 +238,17 @@ data class LogicExpression(
     }
 }
 
+/**
+ * 排序表达式
+ */
 data class OrderExpression(
         val field: Field,
         val order: Order
 )
 
+/**
+ * 排序方式
+ */
 enum class Order {
     ASC,
     DESC

@@ -34,9 +34,9 @@ class SqlParserImpl<T : Any>(
         sb.append(") VALUES")
         tableRef.columns.joinTo(sb, ",", "(", ")")
 
-        val parameters = mutableListOf<Any?>()
-        parameters += tableRef.primaryKey.property.getter.call(t)
-        parameters.addAll(tableRef.columns.map { it.property.getter.call(t) })
+        val parameters = mutableListOf<SqlParameter>()
+        parameters += SqlParameter(tableRef.primaryKey, tableRef.primaryKey.property.getter.call(t))
+        parameters.addAll(tableRef.columns.map { SqlParameter(it, it.property.getter.call(t)) })
         return SqlCommand(
                 sb.toString(),
                 parameters)
@@ -52,9 +52,9 @@ class SqlParserImpl<T : Any>(
         sb.append(tableRef.primaryKey.columnName)
         sb.append("`=?")
 
-        val parameters = mutableListOf<Any?>()
-        parameters.addAll(tableRef.columns.map { it.property.getter.call(t) })
-        parameters.add(tableRef.primaryKey.property.getter.call(t))
+        val parameters = mutableListOf<SqlParameter>()
+        parameters.addAll(tableRef.columns.map { SqlParameter(it, it.property.getter.call(t)) })
+        parameters.add(SqlParameter(tableRef.primaryKey, tableRef.primaryKey.property.getter.call(t)))
 
         return SqlCommand(sb.toString(), parameters)
     }
@@ -67,6 +67,6 @@ class SqlParserImpl<T : Any>(
         sb.append(tableRef.primaryKey.columnName)
         sb.append("`=?")
 
-        return SqlCommand(sb.toString(), mutableListOf(id))
+        return SqlCommand(sb.toString(), mutableListOf(SqlParameter(tableRef.primaryKey, id)))
     }
 }

@@ -12,7 +12,7 @@ interface DataSource {
 }
 
 @Named("hikari")
-@Bean
+@Bean(singleton = true)
 class HikariDataSource : DataSource {
 
     @Autowire

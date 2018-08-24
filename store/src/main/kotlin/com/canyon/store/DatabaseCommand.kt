@@ -1,5 +1,7 @@
 package com.canyon.store
 
+import com.canyon.store.ref.ColumnRef
+
 /**
  * 表示查询数据库所需的命令
  * @param sql SQL命令
@@ -7,7 +9,12 @@ package com.canyon.store
  */
 data class SqlCommand(
         val sql: String,
-        val parameters: List<Any?>
+        val parameters: List<SqlParameter>
+)
+
+data class SqlParameter(
+        val columnRef: ColumnRef,
+        val value: Any?
 )
 
 /**

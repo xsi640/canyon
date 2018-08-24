@@ -14,7 +14,7 @@ interface HandlerValueParser {
     fun parser(webParam: WebRouterParam, value: String?): Any?
 }
 
-@Bean(singleton = true)
+@Bean(true)
 class HandlerValueParserImpl : HandlerValueParser {
 
     @Autowire
