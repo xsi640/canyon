@@ -8,11 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StandardBeanFactory implements BeanFactory {
-    private InjectorContext injectorContext = null;
-
-    public StandardBeanFactory(InjectorContext injectorContext) {
-        this.injectorContext = injectorContext;
-    }
+    private InjectorContext injectorContext;
 
     @Override
     public <T> T createBean(ClassType<T> classType) throws InstantiationException, IllegalAccessException {
@@ -26,6 +22,11 @@ public class StandardBeanFactory implements BeanFactory {
         } else {
             return buildBean(classType);
         }
+    }
+
+    @Override
+    public void setInjectContext(InjectorContext injectorContext) {
+        this.injectorContext = injectorContext;
     }
 
     private <T> T buildBean(ClassType<T> classType) throws IllegalAccessException, InstantiationException {

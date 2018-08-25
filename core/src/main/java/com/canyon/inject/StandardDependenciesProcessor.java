@@ -94,14 +94,18 @@ public class StandardDependenciesProcessor implements DependenciesProcessor {
     private boolean isChildren(Field field, Class<?> clazz) {
         if (field.getType().equals(clazz))
             return true;
-        if (clazz.getSuperclass().equals(clazz))
+        if (clazz.getSuperclass().equals(field.getType()))
             return true;
+        for (Class<?> c : clazz.getInterfaces()) {
+            if (c.equals(field.getType()))
+                return true;
+        }
         if (field.getGenericType() instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
             Type type = parameterizedType.getActualTypeArguments()[0];
             if (type.equals(clazz)) {
                 return true;
-            }else if (type instanceof WildcardType) {
+            } else if (type instanceof WildcardType) {
                 WildcardType wildcardType = (WildcardType) type;
                 ParameterizedType parameterizedType1 = (ParameterizedType) wildcardType.getUpperBounds()[0];
                 Type type1 = parameterizedType1.getRawType();

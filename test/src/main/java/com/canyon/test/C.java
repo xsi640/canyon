@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 
 import java.util.List;
 
-public class C extends Boot {
+public class C {
 
     @Autowire
     private Logger logger;
@@ -18,7 +18,6 @@ public class C extends Boot {
     private List<B> bl;
 
 
-    @Override
     public void run() {
         b.say();
 
@@ -29,7 +28,6 @@ public class C extends Boot {
         logger.info("aaa");
     }
 
-    @Override
     public void destory() {
 
     }

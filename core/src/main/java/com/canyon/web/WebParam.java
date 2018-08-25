@@ -2,7 +2,7 @@ package com.canyon.web;
 
 import java.lang.annotation.*;
 
-@Target(ElementType.TYPE_PARAMETER)
+@Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface WebParam {

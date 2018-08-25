@@ -1,4 +1,4 @@
 //include 'store'
 include 'test'
 include 'core'
-//include 'web'
+include 'web'

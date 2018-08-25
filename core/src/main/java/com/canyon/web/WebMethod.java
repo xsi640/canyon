@@ -7,6 +7,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface WebMethod {
     HttpMethod[] method();
-    MediaType request() default MediaType.ALL;
-    MediaType response() default MediaType.ALL;
+    String request() default MediaType.ALL;
+    String response() default MediaType.ALL;
 }

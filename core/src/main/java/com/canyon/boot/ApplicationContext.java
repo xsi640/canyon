@@ -27,13 +27,14 @@ public class ApplicationContext extends Boot {
         showBanner();
 
         ClassScanner classScanner = new StandardClassScanner(packages);
-        BeanFactory beanFactory = new StandardBeanFactory(super.injectorContext);
+        BeanFactory beanFactory = new StandardBeanFactory();
         super.injectorContext = new InjectContextImpl(
                 classScanner,
                 new StandardDependenciesProcessor(),
                 beanFactory,
                 packages
         );
+        beanFactory.setInjectContext(super.injectorContext);
         preloadingClasses.put(InjectorContext.class, this.injectorContext);
         preloadingClasses.put(ApplicationContext.class, this);
         preloadingClasses.put(Config.class, ConfigFactory.config);
@@ -73,6 +74,7 @@ public class ApplicationContext extends Boot {
             List<Boot> boots = this.injectorContext.getBeanFromSuper(Boot.class, "");
             boots.sort(new BootComparator());
             for (Boot boot : boots) {
+                boot.injectorContext = super.injectorContext;
                 boot.run();
             }
         } catch (InitializeException e) {
@@ -82,6 +84,8 @@ public class ApplicationContext extends Boot {
         } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

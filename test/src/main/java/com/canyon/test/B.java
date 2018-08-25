@@ -3,7 +3,7 @@ package com.canyon.test;
 import com.canyon.inject.Autowire;
 import com.canyon.inject.Bean;
 
-@Bean
+//@Bean
 public class B {
 
     @Autowire
